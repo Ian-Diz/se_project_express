@@ -1,5 +1,3 @@
-// eslint-disable no-underscore-dangle
-
 module.exports = {
   env: {
     browser: true,
@@ -11,5 +9,7 @@ module.exports = {
   parserOptions: {
     ecmaVersion: "latest",
   },
-  rules: {},
+  rules: {
+    "no-underscore-dangle": ["error", { allow: ["foo_", "_bar"] }],
+  },
 };

@@ -11,6 +11,8 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(express.json());
+
 app.use("/users", require("./routes/users"));
 
 app.use("/items", require("./routes/clothingItems"));

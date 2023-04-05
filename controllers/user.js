@@ -7,9 +7,6 @@ const {
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .orFail(() => {
-      throw ERROR_DEFAULT;
-    })
     .then((users) => res.send({ data: users }))
     .catch((err) =>
       console.error(
@@ -37,9 +34,7 @@ module.exports.createUser = (req, res) => {
   console.log(req.body);
 
   User.create({ name, avatar })
-    .orFail(() => {
-      throw ERROR_INVALID_DATA;
-    })
+    .orFail()
     .then((user) => res.send({ data: user }))
     .catch((err) =>
       console.error(
