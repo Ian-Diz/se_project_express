@@ -47,7 +47,7 @@ module.exports.addClothing = (req, res) => {
 module.exports.likeItem = (req, res) => {
   Item.findByIdAndUpdate(
     req.params.itemId,
-    { $addToSet: { likes: req.user._id } },
+    { $addToSet: { likes: req.user.id } },
     { new: true }
   )
     .orFail(() => {
@@ -64,7 +64,7 @@ module.exports.likeItem = (req, res) => {
 module.exports.dislikeItem = (req, res) => {
   Item.findByIdAndUpdate(
     req.params.itemId,
-    { $pull: { likes: req.user._id } },
+    { $pull: { likes: req.user.id } },
     { new: true }
   )
     .orFail(() => {

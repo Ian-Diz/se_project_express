@@ -1,9 +1,5 @@
 const User = require("../models/user");
-const {
-  ERROR_DEFAULT,
-  ERROR_DOES_NOT_EXIST,
-  ERROR_INVALID_DATA,
-} = require("../utils/errors");
+const { ERROR_DEFAULT, ERROR_DOES_NOT_EXIST } = require("../utils/errors");
 
 module.exports.getUsers = (req, res) => {
   User.find({})
