@@ -21,9 +21,7 @@ module.exports.getClothing = (req, res) => {
 module.exports.removeClothing = (req, res) => {
   Item.findByIdAndDelete(req.params.id)
     .orFail(() => {
-      const error = new Error("Item ID not found");
-      error.statusCode = 404;
-      throw error;
+      throw ERROR_DOES_NOT_EXIST;
     })
     .then((item) => res.send({ data: item }))
     .catch((err) =>
@@ -35,7 +33,7 @@ module.exports.removeClothing = (req, res) => {
 
 module.exports.addClothing = (req, res) => {
   const { name, weather, imageUrl } = req.body;
-  let owner = req.user._id;
+  const owner = req.user.id;
 
   Item.create({ name, weather, imageUrl, owner })
     .then((item) => res.send({ data: item }))
