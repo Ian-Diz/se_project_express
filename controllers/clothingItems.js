@@ -10,7 +10,7 @@ module.exports.getClothing = (req, res) => {
     .orFail(() => {
       throw ERROR_DEFAULT;
     })
-    .then((items) => res.send({ data: items }))
+    .then((items) => res.send(items))
     .catch((err) =>
       console.error(
         `Error ${err.name} with the message ${err.message} has occurred while executing the code`
@@ -38,6 +38,20 @@ module.exports.addClothing = (req, res) => {
   let owner = req.user._id;
 
   Item.create({ name, weather, imageUrl, owner })
+    .then((item) => res.send({ data: item }))
+    .catch((err) =>
+      console.error(
+        `Error ${err.name} with the message ${err.message} has occurred while executing the code`
+      )
+    );
+};
+
+module.exports.likeItem = (req, res) => {
+  Item.findByIdAndUpdate(
+    req.params.itemId,
+    { $addToSet: { likes: req.user._id } },
+    { new: true }
+  )
     .orFail(() => {
       throw ERROR_INVALID_DATA;
     })
@@ -49,24 +63,8 @@ module.exports.addClothing = (req, res) => {
     );
 };
 
-module.exports.likeItem = (req, res) => {
-  ClothingItem.findByIdAndUpdate(
-    req.params.itemId,
-    { $addToSet: { likes: req.user._id } },
-    { new: true }
-  )
-    .orFail(() => {
-      throw ERROR_INVALID_DATA;
-    })
-    .catch((err) =>
-      console.error(
-        `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-      )
-    );
-};
-
 module.exports.dislikeItem = (req, res) => {
-  ClothingItem.findByIdAndUpdate(
+  Item.findByIdAndUpdate(
     req.params.itemId,
     { $pull: { likes: req.user._id } },
     { new: true }
@@ -74,6 +72,7 @@ module.exports.dislikeItem = (req, res) => {
     .orFail(() => {
       throw ERROR_INVALID_DATA;
     })
+    .then((item) => res.send({ data: item }))
     .catch((err) =>
       console.error(
         `Error ${err.name} with the message ${err.message} has occurred while executing the code`

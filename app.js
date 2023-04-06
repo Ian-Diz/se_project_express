@@ -13,16 +13,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.json());
 
-app.use("/users", require("./routes/users"));
-
-app.use("/items", require("./routes/clothingItems"));
-
 app.use((req, res, next) => {
   req.user = {
     _id: "642c79790442cd993928c3ba",
   };
   next();
 });
+
+app.use("/users", require("./routes/users"));
+
+app.use("/items", require("./routes/clothingItems"));
 
 app.listen(PORT, () => {
   console.log(`Server is listening on ${PORT}`);

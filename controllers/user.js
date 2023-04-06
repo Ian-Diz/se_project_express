@@ -7,7 +7,10 @@ const {
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
+    .orFail(() => {
+      throw ERROR_DEFAULT;
+    })
+    .then((users) => res.send(users))
     .catch((err) =>
       console.error(
         `Error ${err.name} with the message ${err.message} has occurred while executing the code`
@@ -16,7 +19,7 @@ module.exports.getUsers = (req, res) => {
 };
 
 module.exports.findUser = (req, res) => {
-  User.findById(req.params.id)
+  User.findById(req.params.userId)
     .orFail(() => {
       throw ERROR_DOES_NOT_EXIST;
     })
@@ -34,8 +37,7 @@ module.exports.createUser = (req, res) => {
   console.log(req.body);
 
   User.create({ name, avatar })
-    .orFail()
-    .then((user) => res.send({ data: user }))
+    .then((user) => res.send(user))
     .catch((err) =>
       console.error(
         `Error ${err.name} with the message ${err.message} has occurred while executing the code`
