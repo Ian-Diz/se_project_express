@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const routes = require("./routes/index");
 
 mongoose.connect("mongodb://localhost:27017/wtwr_db");
 
@@ -15,14 +16,12 @@ app.use(express.json());
 
 app.use((req, res, next) => {
   req.user = {
-    id: "642c79790442cd993928c3ba",
+    _id: "642c79790442cd993928c3ba",
   };
   next();
 });
 
-app.use("/users", require("./routes/users"));
-
-app.use("/items", require("./routes/clothingItems"));
+app.use(routes);
 
 app.listen(PORT, () => {
   console.log(`Server is listening on ${PORT}`);
