@@ -1,51 +1,37 @@
 const Item = require("../models/clothingItem");
 const {
-  ERROR_DEFAULT,
   ERROR_DOES_NOT_EXIST,
   ERROR_INVALID_DATA,
+  INVALID_DATA_CODE,
+  DOES_NOT_EXIST_CODE,
+  DEFAULT_CODE,
 } = require("../utils/errors");
 
 module.exports.getClothing = (req, res) => {
   Item.find({})
     .then((items) => res.send(items))
-    .catch((err) => {
-      console.error(
-        `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-      );
-      res.status(500).send({ message: "Error with the server" });
+    .catch(() => {
+      res.status(DEFAULT_CODE).send({ message: "Error with the server" });
     });
 };
 
 module.exports.removeClothing = (req, res) => {
   Item.findByIdAndDelete(req.params.itemId)
     .orFail(() => {
-      if (!req.body === 404) {
-        throw ERROR_DOES_NOT_EXIST;
-      } else if (err.name === "CastError") {
-        throw ERROR_INVALID_DATA;
-      }
+      throw ERROR_DOES_NOT_EXIST;
     })
     .then((item) => res.send({ data: item }))
     .catch((err) => {
-      if (err.statusCode === 404) {
-        console.error(
-          `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-        );
-        res.status(404).send({
-          message: `Error ${err.name} with the message ${err.message} has occurred while executing the code`,
+      if (err.statusCode === DOES_NOT_EXIST_CODE) {
+        res.status(DOES_NOT_EXIST_CODE).send({
+          message: "Requested data could not be found",
         });
       } else if (err.name === "CastError") {
-        console.error(
-          `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-        );
-        res.status(400).send({
-          message: `Error ${err.name} with the message ${err.message} has occurred while executing the code`,
+        res.status(INVALID_DATA_CODE).send({
+          message: "Id provided was invalid",
         });
       } else {
-        console.error(
-          `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-        );
-        res.status(500).send({ message: "Error with the server" });
+        res.status(DEFAULT_CODE).send({ message: "Error with the server" });
       }
     });
 };
@@ -61,17 +47,11 @@ module.exports.addClothing = (req, res) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        console.error(
-          `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-        );
-        res.status(400).send({
-          message: `Error ${err.name} with the message ${err.message} has occurred while executing the code`,
+        res.status(INVALID_DATA_CODE).send({
+          message: "Data provided is invalid",
         });
       } else {
-        console.error(
-          `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-        );
-        res.status(500).send({ message: "Error with the server" });
+        res.status(DEFAULT_CODE).send({ message: "Error with the server" });
       }
     });
 };
@@ -79,7 +59,7 @@ module.exports.addClothing = (req, res) => {
 module.exports.likeItem = (req, res) => {
   Item.findByIdAndUpdate(
     req.params.itemId,
-    { $addToSet: { likes: req.user.id } },
+    { $addToSet: { likes: req.user._id } },
     { new: true }
   )
     .orFail(() => {
@@ -87,25 +67,16 @@ module.exports.likeItem = (req, res) => {
     })
     .then((item) => res.send({ data: item }))
     .catch((err) => {
-      if (err.statusCode === 404) {
-        console.error(
-          `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-        );
-        res.status(404).send({
-          message: `Error ${err.name} with the message ${err.message} has occurred while executing the code`,
+      if (err.statusCode === DOES_NOT_EXIST_CODE) {
+        res.status(DOES_NOT_EXIST_CODE).send({
+          message: "Requested data could not be found",
         });
       } else if (err.name === "CastError") {
-        console.error(
-          `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-        );
-        res.status(400).send({
-          message: `Error ${err.name} with the message ${err.message} has occurred while executing the code`,
+        res.status(INVALID_DATA_CODE).send({
+          message: "Id provided was invalid",
         });
       } else {
-        console.error(
-          `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-        );
-        res.status(500).send({ message: "Error with the server" });
+        res.status(DEFAULT_CODE).send({ message: "Error with the server" });
       }
     });
 };
@@ -113,7 +84,7 @@ module.exports.likeItem = (req, res) => {
 module.exports.dislikeItem = (req, res) => {
   Item.findByIdAndUpdate(
     req.params.itemId,
-    { $pull: { likes: req.user.id } },
+    { $pull: { likes: req.user._id } },
     { new: true }
   )
     .orFail(() => {
@@ -121,25 +92,16 @@ module.exports.dislikeItem = (req, res) => {
     })
     .then((item) => res.send({ data: item }))
     .catch((err) => {
-      if (err.statusCode === 404) {
-        console.error(
-          `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-        );
-        res.status(404).send({
-          message: `Error ${err.name} with the message ${err.message} has occurred while executing the code`,
+      if (err.statusCode === DOES_NOT_EXIST_CODE) {
+        res.status(DOES_NOT_EXIST_CODE).send({
+          message: "Requested data could not be found",
         });
       } else if (err.name === "CastError") {
-        console.error(
-          `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-        );
-        res.status(400).send({
-          message: `Error ${err.name} with the message ${err.message} has occurred while executing the code`,
+        res.status(INVALID_DATA_CODE).send({
+          message: "Id provided was invalid",
         });
       } else {
-        console.error(
-          `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-        );
-        res.status(500).send({ message: "Error with the server" });
+        res.status(DEFAULT_CODE).send({ message: "Error with the server" });
       }
     });
 };
