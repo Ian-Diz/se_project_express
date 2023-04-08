@@ -1,7 +1,6 @@
 const Item = require("../models/clothingItem");
 const {
   ERROR_DOES_NOT_EXIST,
-  ERROR_INVALID_DATA,
   INVALID_DATA_CODE,
   DOES_NOT_EXIST_CODE,
   DEFAULT_CODE,

@@ -1,7 +1,6 @@
 const User = require("../models/user");
 const {
   ERROR_DOES_NOT_EXIST,
-  ERROR_INVALID_DATA,
   INVALID_DATA_CODE,
   DOES_NOT_EXIST_CODE,
   DEFAULT_CODE,
@@ -11,9 +10,6 @@ module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
     .catch(() => {
-      console.error(
-        `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-      );
       res.status(DEFAULT_CODE).send({ message: "Error with the server" });
     });
 };
