@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const routes = require("./routes/index");
+const cors = require("cors");
+require("dotenv").config();
 
 mongoose.connect("mongodb://localhost:27017/wtwr_db");
 
@@ -14,12 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: "642c79790442cd993928c3ba",
-  };
-  next();
-});
+app.use(cors());
 
 app.use(routes);
 

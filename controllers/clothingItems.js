@@ -4,6 +4,7 @@ const {
   INVALID_DATA_CODE,
   DOES_NOT_EXIST_CODE,
   DEFAULT_CODE,
+  FORBIDDEN,
 } = require("../utils/errors");
 
 module.exports.getClothing = (req, res) => {
@@ -15,24 +16,30 @@ module.exports.getClothing = (req, res) => {
 };
 
 module.exports.removeClothing = (req, res) => {
-  Item.findByIdAndDelete(req.params.itemId)
-    .orFail(() => {
-      throw ERROR_DOES_NOT_EXIST;
-    })
-    .then((item) => res.send({ data: item }))
-    .catch((err) => {
-      if (err.statusCode === DOES_NOT_EXIST_CODE) {
-        res.status(DOES_NOT_EXIST_CODE).send({
-          message: "Requested data could not be found",
-        });
-      } else if (err.name === "CastError") {
-        res.status(INVALID_DATA_CODE).send({
-          message: "Id provided was invalid",
-        });
-      } else {
-        res.status(DEFAULT_CODE).send({ message: "Error with the server" });
-      }
-    });
+  const owner = req.user._id;
+
+  if (owner) {
+    Item.findByIdAndDelete(req.params.itemId)
+      .orFail(() => {
+        throw ERROR_DOES_NOT_EXIST;
+      })
+      .then((item) => res.send({ data: item }))
+      .catch((err) => {
+        if (err.statusCode === DOES_NOT_EXIST_CODE) {
+          res.status(DOES_NOT_EXIST_CODE).send({
+            message: "Requested data could not be found",
+          });
+        } else if (err.name === "CastError") {
+          res.status(INVALID_DATA_CODE).send({
+            message: "Id provided was invalid",
+          });
+        } else {
+          res.status(DEFAULT_CODE).send({ message: "Error with the server" });
+        }
+      });
+  } else {
+    throw FORBIDDEN;
+  }
 };
 
 module.exports.addClothing = (req, res) => {
