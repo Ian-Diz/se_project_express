@@ -10,12 +10,12 @@ const auth = require("../middlewares/auth");
 
 router.get("/", getClothing);
 
-router.delete("/:itemId", removeClothing, auth);
+router.delete("/:itemId", auth, removeClothing);
 
-//router.post("/", addClothing, auth);
+router.post("/", auth, addClothing);
 
-router.put("/:itemId/likes", likeItem, auth);
+router.put("/:itemId/likes", auth, likeItem);
 
-router.delete("/:itemId/likes", dislikeItem, auth);
+router.delete("/:itemId/likes", auth, dislikeItem);
 
 module.exports = router;

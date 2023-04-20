@@ -5,6 +5,7 @@ const {
   DOES_NOT_EXIST_CODE,
   DEFAULT_CODE,
   FORBIDDEN,
+  FORBIDDEN_CODE,
 } = require("../utils/errors");
 
 module.exports.getClothing = (req, res) => {
@@ -19,11 +20,20 @@ module.exports.removeClothing = (req, res) => {
   const owner = req.user._id;
 
   if (owner) {
-    Item.findByIdAndDelete(req.params.itemId)
+    Item.findById(req.params.itemId)
       .orFail(() => {
         throw ERROR_DOES_NOT_EXIST;
       })
-      .then((item) => res.send({ data: item }))
+      .then((item) => {
+        if (String(item.owner) !== req.user._id) {
+          return res
+            .status(FORBIDDEN_CODE)
+            .send({
+              message: "You do not have permission to delete this resource",
+            });
+        }
+        res.send({ data: item });
+      })
       .catch((err) => {
         if (err.statusCode === DOES_NOT_EXIST_CODE) {
           res.status(DOES_NOT_EXIST_CODE).send({
