@@ -1,8 +1,8 @@
-const User = require("../models/user");
+const bcrypt = require("bcryptjs");
 
 const jwt = require("jsonwebtoken");
 
-const bcrypt = require("bcryptjs");
+const User = require("../models/user");
 
 const REACT_APP_JWT_SECRET = require("../utils/config");
 
@@ -26,23 +26,30 @@ module.exports.getUsers = (req, res) => {
 module.exports.createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
-  bcrypt.hash(password, 10).then((hash) => {
-    User.create({ name, avatar, email, password: hash })
-      .then((user) => res.send(user))
-      .catch((err) => {
-        if (err.name === "ValidationError") {
-          res.status(INVALID_DATA_CODE).send({
-            message: "Data provided is invalid",
-          });
-        } else if (err.code === 11000) {
-          res
-            .status(CONFLICT_CODE)
-            .send({ message: "User with this email already exists" });
-        } else {
-          res.status(DEFAULT_CODE).send({ message: "Error with the server" });
-        }
-      });
-  });
+  bcrypt
+    .hash(password, 10)
+    .then((hash) => {
+      User.create({ name, avatar, email, password: hash })
+        .then((user) => {
+          res.send({ name, avatar, email, _id: user._id });
+        })
+        .catch((err) => {
+          if (err.name === "ValidationError") {
+            res.status(INVALID_DATA_CODE).send({
+              message: "Data provided is invalid",
+            });
+          } else if (err.code === 11000) {
+            res
+              .status(CONFLICT_CODE)
+              .send({ message: "User with this email already exists" });
+          } else {
+            res.status(DEFAULT_CODE).send({ message: "Error with the server" });
+          }
+        });
+    })
+    .catch(() => {
+      res.status(DEFAULT_CODE).send({ message: "Error with the server" });
+    });
 };
 
 module.exports.login = (req, res) => {
@@ -57,9 +64,6 @@ module.exports.login = (req, res) => {
     })
     .catch((err) => {
       res.status(UNAUTHORIZED_CODE).send({ message: err.message });
-      console.error(
-        `Error ${err.name} with the message ${err.message} has occurred while executing the code`
-      );
     });
 };
 
@@ -87,7 +91,7 @@ module.exports.getCurrentUser = (req, res) => {
 module.exports.updateUser = (req, res) => {
   const { name, avatar } = req.body;
 
-  User.findByIdAndUpdate(req.user._id, { name: name, avatar: avatar })
+  User.findByIdAndUpdate(req.user._id, { name, avatar })
     .orFail(() => {
       throw ERROR_DOES_NOT_EXIST;
     })

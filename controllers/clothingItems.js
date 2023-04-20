@@ -4,7 +4,6 @@ const {
   INVALID_DATA_CODE,
   DOES_NOT_EXIST_CODE,
   DEFAULT_CODE,
-  FORBIDDEN,
   FORBIDDEN_CODE,
 } = require("../utils/errors");
 
@@ -19,37 +18,32 @@ module.exports.getClothing = (req, res) => {
 module.exports.removeClothing = (req, res) => {
   const owner = req.user._id;
 
-  if (owner) {
-    Item.findById(req.params.itemId)
-      .orFail(() => {
-        throw ERROR_DOES_NOT_EXIST;
-      })
-      .then((item) => {
-        if (String(item.owner) !== req.user._id) {
-          return res
-            .status(FORBIDDEN_CODE)
-            .send({
-              message: "You do not have permission to delete this resource",
-            });
-        }
-        res.send({ data: item });
-      })
-      .catch((err) => {
-        if (err.statusCode === DOES_NOT_EXIST_CODE) {
-          res.status(DOES_NOT_EXIST_CODE).send({
-            message: "Requested data could not be found",
-          });
-        } else if (err.name === "CastError") {
-          res.status(INVALID_DATA_CODE).send({
-            message: "Id provided was invalid",
-          });
-        } else {
-          res.status(DEFAULT_CODE).send({ message: "Error with the server" });
-        }
-      });
-  } else {
-    throw FORBIDDEN;
-  }
+  Item.findById(req.params.itemId)
+    .orFail(() => {
+      throw ERROR_DOES_NOT_EXIST;
+    })
+    .then((item) => {
+      if (String(item.owner) !== owner) {
+        return res.status(FORBIDDEN_CODE).send({
+          message: "You do not have permission to delete this resource",
+        });
+      }
+
+      return item.deleteOne().then(() => res.send({ data: item }));
+    })
+    .catch((err) => {
+      if (err.statusCode === DOES_NOT_EXIST_CODE) {
+        res.status(DOES_NOT_EXIST_CODE).send({
+          message: "Requested data could not be found",
+        });
+      } else if (err.name === "CastError") {
+        res.status(INVALID_DATA_CODE).send({
+          message: "Id provided was invalid",
+        });
+      } else {
+        res.status(DEFAULT_CODE).send({ message: "Error with the server" });
+      }
+    });
 };
 
 module.exports.addClothing = (req, res) => {
