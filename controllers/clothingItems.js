@@ -1,18 +1,10 @@
 const Item = require("../models/clothingItem");
-const {
-  ERROR_DOES_NOT_EXIST,
-  INVALID_DATA_CODE,
-  DOES_NOT_EXIST_CODE,
-  DEFAULT_CODE,
-  FORBIDDEN_CODE,
-} = require("../utils/errors");
+const { ERROR_DOES_NOT_EXIST, FORBIDDEN_CODE } = require("../utils/errors");
 
 module.exports.getClothing = (req, res) => {
   Item.find({})
     .then((items) => res.send(items))
-    .catch(() => {
-      res.status(DEFAULT_CODE).send({ message: "Error with the server" });
-    });
+    .catch(next);
 };
 
 module.exports.removeClothing = (req, res) => {
@@ -31,19 +23,7 @@ module.exports.removeClothing = (req, res) => {
 
       return item.deleteOne().then(() => res.send({ data: item }));
     })
-    .catch((err) => {
-      if (err.statusCode === DOES_NOT_EXIST_CODE) {
-        res.status(DOES_NOT_EXIST_CODE).send({
-          message: "Requested data could not be found",
-        });
-      } else if (err.name === "CastError") {
-        res.status(INVALID_DATA_CODE).send({
-          message: "Id provided was invalid",
-        });
-      } else {
-        res.status(DEFAULT_CODE).send({ message: "Error with the server" });
-      }
-    });
+    .catch(next);
 };
 
 module.exports.addClothing = (req, res) => {
@@ -55,15 +35,7 @@ module.exports.addClothing = (req, res) => {
       res.status(201);
       res.send({ data: item });
     })
-    .catch((err) => {
-      if (err.name === "ValidationError") {
-        res.status(INVALID_DATA_CODE).send({
-          message: "Data provided is invalid",
-        });
-      } else {
-        res.status(DEFAULT_CODE).send({ message: "Error with the server" });
-      }
-    });
+    .catch(next);
 };
 
 module.exports.likeItem = (req, res) => {
@@ -76,19 +48,7 @@ module.exports.likeItem = (req, res) => {
       throw ERROR_DOES_NOT_EXIST;
     })
     .then((item) => res.send({ data: item }))
-    .catch((err) => {
-      if (err.statusCode === DOES_NOT_EXIST_CODE) {
-        res.status(DOES_NOT_EXIST_CODE).send({
-          message: "Requested data could not be found",
-        });
-      } else if (err.name === "CastError") {
-        res.status(INVALID_DATA_CODE).send({
-          message: "Id provided was invalid",
-        });
-      } else {
-        res.status(DEFAULT_CODE).send({ message: "Error with the server" });
-      }
-    });
+    .catch(next);
 };
 
 module.exports.dislikeItem = (req, res) => {
@@ -101,17 +61,5 @@ module.exports.dislikeItem = (req, res) => {
       throw ERROR_DOES_NOT_EXIST;
     })
     .then((item) => res.send({ data: item }))
-    .catch((err) => {
-      if (err.statusCode === DOES_NOT_EXIST_CODE) {
-        res.status(DOES_NOT_EXIST_CODE).send({
-          message: "Requested data could not be found",
-        });
-      } else if (err.name === "CastError") {
-        res.status(INVALID_DATA_CODE).send({
-          message: "Id provided was invalid",
-        });
-      } else {
-        res.status(DEFAULT_CODE).send({ message: "Error with the server" });
-      }
-    });
+    .catch(next);
 };

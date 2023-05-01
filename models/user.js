@@ -13,15 +13,14 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    required: true,
+    required: false,
     validate: {
       validator(value) {
-        return validator.isURL(value);
+        return validator.isURL(value) || value.length === 0;
       },
       message: "You must enter a valid URL",
     },
-    default:
-      "https://practicum-content.s3.us-west-1.amazonaws.com/software-engineer/wtwr-project/Elise.png",
+    default: "",
   },
   email: {
     type: String,

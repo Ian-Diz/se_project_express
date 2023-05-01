@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const bodyParser = require("body-parser");
 const rateLimit = require("express-rate-limit");
 const routes = require("./routes/index");
+const errorHandler = require("./middlewares/error-handler");
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -27,11 +28,13 @@ app.use(express.json());
 
 app.use(cors());
 
-app.use(limiter);
+//app.use(limiter);
 
 app.use(helmet());
 
 app.use(routes);
+
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is listening on ${PORT}`);

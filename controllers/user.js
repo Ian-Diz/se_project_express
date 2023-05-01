@@ -6,21 +6,12 @@ const User = require("../models/user");
 
 const REACT_APP_JWT_SECRET = require("../utils/config");
 
-const {
-  ERROR_DOES_NOT_EXIST,
-  INVALID_DATA_CODE,
-  DOES_NOT_EXIST_CODE,
-  DEFAULT_CODE,
-  UNAUTHORIZED_CODE,
-  CONFLICT_CODE,
-} = require("../utils/errors");
+const { ERROR_DOES_NOT_EXIST } = require("../utils/errors");
 
 module.exports.getUsers = (req, res) => {
   User.find({})
     .then((users) => res.send(users))
-    .catch(() => {
-      res.status(DEFAULT_CODE).send({ message: "Error with the server" });
-    });
+    .catch(next);
 };
 
 module.exports.createUser = (req, res) => {
@@ -33,23 +24,9 @@ module.exports.createUser = (req, res) => {
         .then((user) => {
           res.send({ name, avatar, email, _id: user._id });
         })
-        .catch((err) => {
-          if (err.name === "ValidationError") {
-            res.status(INVALID_DATA_CODE).send({
-              message: "Data provided is invalid",
-            });
-          } else if (err.code === 11000) {
-            res
-              .status(CONFLICT_CODE)
-              .send({ message: "User with this email already exists" });
-          } else {
-            res.status(DEFAULT_CODE).send({ message: "Error with the server" });
-          }
-        });
+        .catch(next);
     })
-    .catch(() => {
-      res.status(DEFAULT_CODE).send({ message: "Error with the server" });
-    });
+    .catch(next);
 };
 
 module.exports.login = (req, res) => {
@@ -62,9 +39,7 @@ module.exports.login = (req, res) => {
       });
       res.send({ token });
     })
-    .catch((err) => {
-      res.status(UNAUTHORIZED_CODE).send({ message: err.message });
-    });
+    .catch(next);
 };
 
 module.exports.getCurrentUser = (req, res) => {
@@ -73,19 +48,7 @@ module.exports.getCurrentUser = (req, res) => {
       throw ERROR_DOES_NOT_EXIST;
     })
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.statusCode === DOES_NOT_EXIST_CODE) {
-        res.status(DOES_NOT_EXIST_CODE).send({
-          message: "Requested data could not be found",
-        });
-      } else if (err.name === "CastError") {
-        res.status(INVALID_DATA_CODE).send({
-          message: "Id provided was invalid",
-        });
-      } else {
-        res.status(DEFAULT_CODE).send({ message: "Error with the server" });
-      }
-    });
+    .catch(next);
 };
 
 module.exports.updateUser = (req, res) => {
@@ -96,17 +59,5 @@ module.exports.updateUser = (req, res) => {
       throw ERROR_DOES_NOT_EXIST;
     })
     .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === "ValidationError") {
-        res.status(INVALID_DATA_CODE).send({
-          message: "Data provided is invalid",
-        });
-      } else if (err.statusCode === DOES_NOT_EXIST_CODE) {
-        res.status(DOES_NOT_EXIST_CODE).send({
-          message: "Requested data could not be found",
-        });
-      } else {
-        res.status(DEFAULT_CODE).send({ message: "Error with the server" });
-      }
-    });
+    .catch(next);
 };
