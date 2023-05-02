@@ -4,14 +4,18 @@ const user = require("./users");
 const { DOES_NOT_EXIST_CODE } = require("../utils/errors");
 const { login, createUser } = require("../controllers/user");
 const auth = require("../middlewares/auth");
+const {
+  validateUserInfo,
+  validateUserLogin,
+} = require("../middlewares/validator");
 
 router.use("/items", clothingItem);
 
 router.use("/users", auth, user);
 
-router.post("/signin", login);
+router.post("/signin", validateUserLogin, login);
 
-router.post("/signup", createUser);
+router.post("/signup", validateUserInfo, createUser);
 
 router.use((req, res) => {
   res.status(DOES_NOT_EXIST_CODE).send({

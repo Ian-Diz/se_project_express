@@ -7,6 +7,8 @@ const bodyParser = require("body-parser");
 const rateLimit = require("express-rate-limit");
 const routes = require("./routes/index");
 const errorHandler = require("./middlewares/error-handler");
+const { errors } = require("celebrate");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -32,7 +34,13 @@ app.use(cors());
 
 app.use(helmet());
 
+app.use(requestLogger);
+
 app.use(routes);
+
+app.use(errorLogger);
+
+app.use(errors());
 
 app.use(errorHandler);
 
