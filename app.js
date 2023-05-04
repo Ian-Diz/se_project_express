@@ -19,7 +19,7 @@ const limiter = rateLimit({
 
 mongoose.connect("mongodb://localhost:27017/wtwr_db");
 
-const { PORT = 3001 } = process.env;
+const { PORT = 3000 } = process.env;
 
 const app = express();
 
@@ -30,11 +30,17 @@ app.use(express.json());
 
 app.use(cors());
 
-//app.use(limiter);
+app.use(limiter);
 
 app.use(helmet());
 
 app.use(requestLogger);
+
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
 
 app.use(routes);
 
