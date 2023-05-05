@@ -50,7 +50,7 @@ app.use(errorLogger);
 
 app.use(errors());
 
-app.use(errorHandler);
+app.use(errorHandler());
 
 app.listen(PORT, () => {
   console.log(`Server is listening on ${PORT}`);
