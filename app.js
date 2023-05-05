@@ -6,7 +6,7 @@ const helmet = require("helmet");
 const bodyParser = require("body-parser");
 const rateLimit = require("express-rate-limit");
 const routes = require("./routes/index");
-const { errorHandler } = require("./middlewares/error-handler");
+const errorHandler = require("./middlewares/error-handler");
 const { errors } = require("celebrate");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
@@ -50,7 +50,7 @@ app.use(errorLogger);
 
 app.use(errors());
 
-app.use(errorHandler());
+app.use(errorHandler);
 
 app.listen(PORT, () => {
   console.log(`Server is listening on ${PORT}`);
