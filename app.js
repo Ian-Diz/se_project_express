@@ -30,6 +30,12 @@ app.use(express.json());
 
 app.use(cors());
 
+app.use((res, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+
+  next();
+});
+
 app.use(limiter);
 
 app.use(helmet());

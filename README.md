@@ -7,3 +7,7 @@ This back-end project is being made with the goal of supporting the front-end ap
 `npm run start` — to launch the server
 
 `npm run dev` — to launch the server with the hot reload feature
+
+- [Website Link](https://www.wtwr.ignorelist.com/#/)
+
+- [Backend Link](https://api.wtwr.ignorelist.com/)
