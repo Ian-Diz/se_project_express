@@ -8,13 +8,13 @@ const REACT_APP_JWT_SECRET = require("../utils/config");
 
 const { ERROR_DOES_NOT_EXIST } = require("../utils/errors");
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
     .catch(next);
 };
 
-module.exports.createUser = (req, res) => {
+module.exports.createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   bcrypt
@@ -29,7 +29,7 @@ module.exports.createUser = (req, res) => {
     .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -42,7 +42,7 @@ module.exports.login = (req, res) => {
     .catch(next);
 };
 
-module.exports.getCurrentUser = (req, res) => {
+module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
       throw ERROR_DOES_NOT_EXIST;
@@ -51,7 +51,7 @@ module.exports.getCurrentUser = (req, res) => {
     .catch(next);
 };
 
-module.exports.updateUser = (req, res) => {
+module.exports.updateUser = (req, res, next) => {
   const { name, avatar } = req.body;
 
   User.findByIdAndUpdate(req.user._id, { name, avatar })
