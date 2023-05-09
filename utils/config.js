@@ -1,4 +1,8 @@
-const REACT_APP_JWT_SECRET =
-  "d940587a476b9c1be9b70705983ccf252181b3b8bf5253e9e72f4460f42f59b2";
+const rateLimit = require("express-rate-limit");
 
-module.exports = REACT_APP_JWT_SECRET;
+module.exports.limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+});

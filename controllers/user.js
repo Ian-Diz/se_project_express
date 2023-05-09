@@ -4,7 +4,8 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 
-const REACT_APP_JWT_SECRET = require("../utils/config");
+require("dotenv").config();
+const REACT_APP_JWT_SECRET = process.env.REACT_APP_JWT_SECRET;
 
 const NotFoundError = require("../errors/NotFoundError");
 const ConflictError = require("../errors/ConflictError");
@@ -28,19 +29,15 @@ module.exports.createUser = (req, res, next) => {
         })
         .catch((err) => {
           if (err.code === 11000) {
-            return Promise.reject(
-              new ConflictError("User with this email already exists")
-            );
+            next(new ConflictError("User with this email already exists"));
           } else if (err.name === "ValidationError") {
-            return Promise.reject(
-              new BadRequestError("Data provided is invalid")
-            );
+            next(new BadRequestError("Data provided is invalid"));
           } else {
             next(err);
           }
         });
     })
-    .catch(next());
+    .catch(next);
 };
 
 module.exports.login = (req, res, next) => {
@@ -53,9 +50,7 @@ module.exports.login = (req, res, next) => {
       });
       res.send({ token });
     })
-    .catch((err) => {
-      console.error(`${err.name} with the message ${err.message}`);
-    });
+    .catch(next);
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
@@ -77,7 +72,7 @@ module.exports.updateUser = (req, res, next) => {
     .then((user) => res.send(user))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return Promise.reject(new BadRequestError("Data provided is invalid"));
+        next(new BadRequestError("Data provided is invalid"));
       } else {
         next(err);
       }

@@ -1,21 +1,13 @@
-require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
 const bodyParser = require("body-parser");
-const rateLimit = require("express-rate-limit");
+const { limiter } = require("./utils/config");
 const { errors } = require("celebrate");
 const routes = require("./routes/index");
 const errorHandler = require("./middlewares/error-handler");
 const { requestLogger, errorLogger } = require("./middlewares/logger");
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
 
 mongoose.connect("mongodb://localhost:27017/wtwr_db");
 

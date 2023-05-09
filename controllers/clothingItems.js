@@ -18,7 +18,7 @@ module.exports.removeClothing = (req, res, next) => {
     })
     .then((item) => {
       if (String(item.owner) !== owner) {
-        return Promise.reject(
+        next(
           new ForbiddenError(
             "You do not have permission to delete this resource"
           )
@@ -41,7 +41,7 @@ module.exports.addClothing = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return Promise.reject(new BadRequestError("Data provided is invalid"));
+        next(new BadRequestError("Data provided is invalid"));
       } else {
         next(err);
       }

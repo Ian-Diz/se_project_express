@@ -1,5 +1,8 @@
 const jwt = require("jsonwebtoken");
-const REACT_APP_JWT_SECRET = require("../utils/config");
+
+require("dotenv").config();
+const REACT_APP_JWT_SECRET = process.env.REACT_APP_JWT_SECRET;
+
 const UnauthorizedError = require("../errors/UnauthorizedError");
 
 const exctractBearerToken = (header) => header.replace("Bearer ", "");
