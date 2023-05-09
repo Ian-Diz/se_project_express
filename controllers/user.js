@@ -5,7 +5,8 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
 require("dotenv").config();
-const REACT_APP_JWT_SECRET = process.env.REACT_APP_JWT_SECRET;
+
+const { REACT_APP_JWT_SECRET } = process.env.REACT_APP_JWT_SECRET;
 
 const NotFoundError = require("../errors/NotFoundError");
 const ConflictError = require("../errors/ConflictError");
