@@ -1,11 +1,6 @@
 const jwt = require("jsonwebtoken");
 const REACT_APP_JWT_SECRET = require("../utils/config");
-
-const { UNAUTHORIZED_CODE } = require("../utils/errors");
-
-const handleAuthError = (res) => {
-  res.status(UNAUTHORIZED_CODE).send({ message: "Authorization Error" });
-};
+const UnauthorizedError = require("../errors/UnauthorizedError");
 
 const exctractBearerToken = (header) => header.replace("Bearer ", "");
 
@@ -13,7 +8,7 @@ module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith("Bearer ")) {
-    return handleAuthError(res);
+    return Promise.reject(new UnauthorizedError("Authorization error"));
   }
 
   const token = exctractBearerToken(authorization);
@@ -22,7 +17,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, REACT_APP_JWT_SECRET);
   } catch (err) {
-    return handleAuthError(res);
+    return Promise.reject(new UnauthorizedError("Authorization error"));
   }
 
   req.user = payload;

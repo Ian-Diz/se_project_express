@@ -6,7 +6,9 @@ const User = require("../models/user");
 
 const REACT_APP_JWT_SECRET = require("../utils/config");
 
-const { ERROR_DOES_NOT_EXIST } = require("../utils/errors");
+const NotFoundError = require("../errors/NotFoundError");
+const ConflictError = require("../errors/ConflictError");
+const BadRequestError = require("../errors/BadRequestError");
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -24,9 +26,21 @@ module.exports.createUser = (req, res, next) => {
         .then((user) => {
           res.send({ name, avatar, email, _id: user._id });
         })
-        .catch(next);
+        .catch((err) => {
+          if (err.code === 11000) {
+            return Promise.reject(
+              new ConflictError("User with this email already exists")
+            );
+          } else if (err.name === "ValidationError") {
+            return Promise.reject(
+              new BadRequestError("Data provided is invalid")
+            );
+          } else {
+            next(err);
+          }
+        });
     })
-    .catch(next);
+    .catch(next());
 };
 
 module.exports.login = (req, res, next) => {
@@ -39,13 +53,15 @@ module.exports.login = (req, res, next) => {
       });
       res.send({ token });
     })
-    .catch(next);
+    .catch((err) => {
+      console.error(`${err.name} with the message ${err.message}`);
+    });
 };
 
 module.exports.getCurrentUser = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => {
-      throw ERROR_DOES_NOT_EXIST;
+      throw new NotFoundError("User with this ID does not exist");
     })
     .then((user) => res.send({ data: user }))
     .catch(next);
@@ -56,8 +72,14 @@ module.exports.updateUser = (req, res, next) => {
 
   User.findByIdAndUpdate(req.user._id, { name, avatar })
     .orFail(() => {
-      throw ERROR_DOES_NOT_EXIST;
+      throw new NotFoundError("User with this ID does not exist");
     })
     .then((user) => res.send(user))
-    .catch(next);
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        return Promise.reject(new BadRequestError("Data provided is invalid"));
+      } else {
+        next(err);
+      }
+    });
 };

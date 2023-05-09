@@ -1,8 +1,8 @@
 const router = require("express").Router();
 const clothingItem = require("./clothingItems");
 const user = require("./users");
-const { DOES_NOT_EXIST_CODE } = require("../utils/errors");
 const { login, createUser } = require("../controllers/user");
+const NotFoundError = require("../errors/NotFoundError");
 const auth = require("../middlewares/auth");
 const {
   validateUserInfo,
@@ -18,9 +18,7 @@ router.post("/signin", validateUserLogin, login);
 router.post("/signup", validateUserInfo, createUser);
 
 router.use((req, res) => {
-  res.status(DOES_NOT_EXIST_CODE).send({
-    message: `Route does not exist`,
-  });
+  throw new NotFoundError("This route does not exist");
 });
 
 module.exports = router;

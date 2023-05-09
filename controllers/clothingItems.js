@@ -1,5 +1,7 @@
 const Item = require("../models/clothingItem");
-const { ERROR_DOES_NOT_EXIST, FORBIDDEN_CODE } = require("../utils/errors");
+const NotFoundError = require("../errors/NotFoundError");
+const ForbiddenError = require("../errors/ForbiddenError");
+const BadRequestError = require("../errors/BadRequestError");
 
 module.exports.getClothing = (req, res, next) => {
   Item.find({})
@@ -12,13 +14,15 @@ module.exports.removeClothing = (req, res, next) => {
 
   Item.findById(req.params.itemId)
     .orFail(() => {
-      throw ERROR_DOES_NOT_EXIST;
+      throw new NotFoundError("Item with this ID does not exist");
     })
     .then((item) => {
       if (String(item.owner) !== owner) {
-        return res.status(FORBIDDEN_CODE).send({
-          message: "You do not have permission to delete this resource",
-        });
+        return Promise.reject(
+          new ForbiddenError(
+            "You do not have permission to delete this resource"
+          )
+        );
       }
 
       return item.deleteOne().then(() => res.send({ data: item }));
@@ -35,7 +39,13 @@ module.exports.addClothing = (req, res, next) => {
       res.status(201);
       res.send({ data: item });
     })
-    .catch(next);
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        return Promise.reject(new BadRequestError("Data provided is invalid"));
+      } else {
+        next(err);
+      }
+    });
 };
 
 module.exports.likeItem = (req, res, next) => {
@@ -45,7 +55,7 @@ module.exports.likeItem = (req, res, next) => {
     { new: true }
   )
     .orFail(() => {
-      throw ERROR_DOES_NOT_EXIST;
+      throw new NotFoundError("Item with this ID does not exist");
     })
     .then((item) => res.send({ data: item }))
     .catch(next);
@@ -58,7 +68,7 @@ module.exports.dislikeItem = (req, res, next) => {
     { new: true }
   )
     .orFail(() => {
-      throw ERROR_DOES_NOT_EXIST;
+      throw new NotFoundError("Item with this ID does not exist");
     })
     .then((item) => res.send({ data: item }))
     .catch(next);
