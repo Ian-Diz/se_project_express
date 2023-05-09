@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
-const { REACT_APP_JWT_SECRET } = process.env.REACT_APP_JWT_SECRET;
+const { REACT_APP_JWT_SECRET = "dev-key" } = process.env.REACT_APP_JWT_SECRET;
 
 const UnauthorizedError = require("../errors/UnauthorizedError");
 
