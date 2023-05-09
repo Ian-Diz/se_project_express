@@ -6,7 +6,7 @@ const User = require("../models/user");
 
 require("dotenv").config();
 
-const { REACT_APP_JWT_SECRET = "dev-key" } = process.env.REACT_APP_JWT_SECRET;
+const { REACT_APP_JWT_SECRET = "dev-key" } = process.env;
 
 const NotFoundError = require("../errors/NotFoundError");
 const ConflictError = require("../errors/ConflictError");
